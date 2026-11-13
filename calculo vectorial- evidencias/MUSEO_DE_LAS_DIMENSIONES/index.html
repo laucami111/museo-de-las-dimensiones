@@ -1,0 +1,1701 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07111f" />
+    <title>Museo de las Dimensiones | Superficies en 3D</title>
+    <meta name="description" content="Una experiencia interactiva para explorar nueve superficies matemáticas en tres dimensiones." />
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+:root {
+    --bg:#07111f;
+    --panel:rgba(12,27,47,.82);
+    --panel-2:#0d1d31;
+    --line:rgba(142,190,230,.15);
+    --text:#edf6ff;
+    --muted:#91a9c2;
+    --cyan:#62e7ef;
+    --blue:#6b9cff;
+    --violet:#ad8bff;
+    --shadow:0 22px 70px rgba(0,0,0,.34)
+}
+* { box-sizing:border-box }
+html,body {
+    margin:0;
+    min-height:100%;
+    background:var(--bg);
+    color:var(--text);
+    font-family:Manrope,system-ui,sans-serif
+}
+body {
+    background:radial-gradient(ellipse at 72% 8%,rgba(40,116,170,.18),transparent 34%),radial-gradient(ellipse at 10% 80%,rgba(99,70,177,.13),transparent 32%),#07111f;
+    overflow-x:hidden
+}
+button { font:inherit }
+.topbar {
+    height:76px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 34px;
+    border-bottom:1px solid var(--line);
+    background:rgba(5,14,26,.72);
+    backdrop-filter:blur(18px);
+    position:sticky;
+    top:0;
+    z-index:10
+}
+.brand {
+    display:flex;
+    align-items:center;
+    gap:13px;
+    min-width:0
+}
+.brand-mark {
+    width:39px;
+    height:39px;
+    border-radius:13px;
+    display:grid;
+    place-items:center;
+    color:#07111f;
+    font-weight:900;
+    font-size:18px;
+    background:linear-gradient(135deg,var(--cyan),var(--blue) 60%,var(--violet));
+    box-shadow:0 0 28px rgba(98,231,239,.22)
+}
+.brand-name {
+    font-size:13px;
+    font-weight:800;
+    letter-spacing:.16em;
+    text-transform:uppercase
+}
+.brand-sub {
+    font-size:10px;
+    color:var(--muted);
+    letter-spacing:.12em;
+    margin-top:3px
+}
+.top-tag {
+    border:1px solid rgba(98,231,239,.25);
+    color:#a8f5f3;
+    border-radius:30px;
+    padding:9px 13px;
+    font-size:10px;
+    letter-spacing:.13em;
+    text-transform:uppercase;
+    background:rgba(98,231,239,.06)
+}
+.layout {
+    display:grid;
+    grid-template-columns:250px minmax(0,1fr);
+    min-height:calc(100vh - 76px)
+}
+.sidebar {
+    padding:28px 17px 24px;
+    border-right:1px solid var(--line);
+    background:rgba(5,14,26,.45)
+}
+.side-label {
+    color:#68829d;
+    font-size:10px;
+    letter-spacing:.2em;
+    font-weight:800;
+    padding:0 12px;
+    margin:7px 0 15px
+}
+.museum-intro {
+    padding:15px 13px 22px;
+    margin-bottom:15px;
+    border-bottom:1px solid var(--line)
+}
+.museum-intro strong {
+    display:block;
+    font-size:14px;
+    line-height:1.4
+}
+.museum-intro span {
+    color:var(--muted);
+    display:block;
+    font-size:11px;
+    line-height:1.6;
+    margin-top:7px
+}
+.nav-list {
+    display:flex;
+    flex-direction:column;
+    gap:6px
+}
+.nav-item {
+    border:1px solid transparent;
+    border-radius:12px;
+    padding:11px;
+    color:#9fb4ca;
+    background:transparent;
+    display:flex;
+    align-items:center;
+    gap:11px;
+    text-align:left;
+    cursor:pointer;
+    transition:.2s ease;
+    width:100%
+}
+.nav-item:hover {
+    background:rgba(104,157,215,.08);
+    color:white
+}
+.nav-item.active {
+    background:linear-gradient(100deg,rgba(72,176,205,.17),rgba(102,130,221,.1));
+    border-color:rgba(98,231,239,.23);
+    color:#efffff;
+    box-shadow:inset 3px 0 0 var(--cyan)
+}
+.nav-num {
+    font-family:"DM Mono",monospace;
+    font-size:10px;
+    color:#6d8ba8;
+    width:22px
+}
+.nav-item.active .nav-num { color:var(--cyan) }
+.nav-name {
+    font-size:11px;
+    font-weight:700;
+    line-height:1.35
+}
+.side-foot {
+    margin:28px 12px 0;
+    color:#617b95;
+    font-size:10px;
+    line-height:1.7
+}
+main {
+    min-width:0;
+    padding:34px clamp(18px,3.2vw,48px) 44px;
+    max-width:1600px;
+    width:100%;
+    margin:0 auto
+}
+.eyebrow {
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:var(--cyan);
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.2em;
+    text-transform:uppercase
+}
+.eyebrow:before {
+    content:"";
+    width:23px;
+    height:1px;
+    background:var(--cyan);
+    box-shadow:0 0 10px var(--cyan)
+}
+.hero-head {
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:20px;
+    margin:16px 0 24px
+}
+h1 {
+    font-size:clamp(27px,3.3vw,43px);
+    line-height:1.08;
+    letter-spacing:-.045em;
+    margin:0;
+    font-weight:800
+}
+.subtitle {
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.7;
+    margin:11px 0 0;
+    max-width:650px
+}
+.room-count {
+    flex:0 0 auto;
+    border:1px solid var(--line);
+    background:rgba(13,29,49,.62);
+    border-radius:13px;
+    padding:11px 15px;
+    text-align:right
+}
+.room-count strong {
+    display:block;
+    color:var(--cyan);
+    font:500 17px "DM Mono",monospace
+}
+.room-count span {
+    color:#7790aa;
+    font-size:9px;
+    letter-spacing:.14em;
+    text-transform:uppercase
+}
+.content-grid {
+    display:grid;
+    grid-template-columns:minmax(0,1.65fr) minmax(270px,.85fr);
+    gap:18px;
+    align-items:stretch
+}
+.viewer-card,.info-card {
+    border:1px solid var(--line);
+    border-radius:20px;
+    background:var(--panel);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    min-width:0
+}
+.viewer-top {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 18px;
+    border-bottom:1px solid var(--line)
+}
+.viewer-top strong {
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase
+}
+.live {
+    color:#9ce9d7;
+    font-size:9px;
+    letter-spacing:.14em;
+    display:flex;
+    align-items:center;
+    gap:7px
+}
+.live:before {
+    content:"";
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:#62e6b5;
+    box-shadow:0 0 10px #62e6b5
+}
+#scene-wrap {
+    position:relative;
+    height:min(59vw,520px);
+    min-height:330px;
+    background:radial-gradient(ellipse at 50% 45%,#132d49 0%,#0a192b 55%,#071321 100%)
+}
+#scene-wrap canvas {
+    display:block;
+    width:100%;
+    height:100%;
+    outline:none
+}
+.scene-hint {
+    position:absolute;
+    left:17px;
+    bottom:15px;
+    color:#9bb2c9;
+    font-size:10px;
+    padding:8px 11px;
+    border:1px solid rgba(151,192,228,.15);
+    border-radius:9px;
+    background:rgba(5,15,27,.62);
+    pointer-events:none
+}
+.scene-controls {
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    padding:13px 16px;
+    border-top:1px solid var(--line)
+}
+.section-panel {
+    padding:15px 17px 16px;
+    border-top:1px solid var(--line);
+    background:linear-gradient(110deg,rgba(98,231,239,.045),rgba(107,156,255,.035))
+}
+.section-head {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap
+}
+.section-title {
+    color:#dffcff;
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.08em
+}
+.section-toggle {
+    border:1px solid rgba(98,231,239,.32);
+    border-radius:9px;
+    padding:8px 11px;
+    color:#bffbfa;
+    background:rgba(98,231,239,.08);
+    cursor:pointer;
+    font-size:10px;
+    font-weight:800
+}
+.section-toggle.on {
+    color:#061421;
+    background:linear-gradient(110deg,var(--cyan),#8caeff)
+}
+.section-range-row {
+    display:grid;
+    grid-template-columns:auto minmax(100px,1fr) auto;
+    align-items:center;
+    gap:13px;
+    margin-top:13px
+}
+.section-range-row label,.section-value {
+    color:#91a9c2;
+    font:10px "DM Mono",monospace
+}
+.section-value {
+    color:var(--cyan);
+    min-width:43px;
+    text-align:right
+}
+#section-slider {
+    width:100%;
+    accent-color:var(--cyan);
+    cursor:pointer
+}
+#section-slider:disabled {
+    opacity:.35;
+    cursor:not-allowed
+}
+.section-note {
+    color:#91a9c2;
+    font-size:10px;
+    line-height:1.6;
+    margin:10px 0 0;
+    min-height:16px
+}
+.control-btn {
+    border:1px solid rgba(139,181,218,.2);
+    border-radius:10px;
+    padding:9px 12px;
+    color:#b9cee2;
+    background:rgba(90,133,177,.08);
+    cursor:pointer;
+    font-size:10px;
+    font-weight:700;
+    transition:.2s
+}
+.control-btn:hover,.control-btn.on {
+    border-color:rgba(98,231,239,.45);
+    color:#cfffff;
+    background:rgba(98,231,239,.1)
+}
+.info-card {
+    padding:23px 22px;
+    display:flex;
+    flex-direction:column
+}
+.info-kicker {
+    color:var(--violet);
+    font-size:9px;
+    font-weight:800;
+    letter-spacing:.19em;
+    text-transform:uppercase
+}
+.info-card h2 {
+    font-size:22px;
+    line-height:1.2;
+    margin:10px 0 7px;
+    letter-spacing:-.035em
+}
+.latin-name {
+    color:#91a9c2;
+    font-size:11px;
+    margin-bottom:19px
+}
+.formula-box {
+    border:1px solid rgba(98,231,239,.2);
+    background:linear-gradient(135deg,rgba(98,231,239,.09),rgba(107,156,255,.07));
+    border-radius:13px;
+    padding:16px
+}
+.formula-label {
+    color:#7f9ab5;
+    font-size:9px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    margin-bottom:10px
+}
+.formula {
+    color:#e9ffff;
+    font:500 clamp(14px,1.3vw,18px) "DM Mono",monospace;
+    line-height:1.6;
+    overflow-wrap:anywhere
+}
+.description {
+    color:#a8bbcf;
+    font-size:12px;
+    line-height:1.8;
+    margin:18px 0 17px
+}
+.fact-list {
+    display:grid;
+    gap:9px;
+    margin-top:2px
+}
+.fact {
+    display:flex;
+    gap:9px;
+    align-items:flex-start;
+    color:#a9bfd4;
+    font-size:10px;
+    line-height:1.6
+}
+.fact:before {
+    content:"✦";
+    color:var(--cyan);
+    font-size:10px;
+    margin-top:1px
+}
+.info-bottom {
+    margin-top:auto;
+    padding-top:19px
+}
+.pill {
+    display:inline-flex;
+    border:1px solid rgba(173,139,255,.25);
+    color:#c5b1ff;
+    background:rgba(173,139,255,.08);
+    border-radius:30px;
+    padding:7px 10px;
+    font-size:9px;
+    letter-spacing:.08em
+}
+.bottom-row {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-top:18px
+}
+.next-btn {
+    border:0;
+    border-radius:11px;
+    padding:11px 15px;
+    color:#061421;
+    font-weight:800;
+    font-size:10px;
+    cursor:pointer;
+    background:linear-gradient(110deg,var(--cyan),#8caeff);
+    box-shadow:0 8px 25px rgba(98,231,239,.15)
+}
+.next-btn:hover {
+    filter:brightness(1.08);
+    transform:translateY(-1px)
+}
+.progress {
+    color:#7792ad;
+    font:10px "DM Mono",monospace
+}
+.evidence-section {
+    margin-top:20px;
+    padding:22px;
+    border:1px solid var(--line);
+    border-radius:20px;
+    background:var(--panel);
+    box-shadow:var(--shadow);
+    min-width:0
+}
+.evidence-head {
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:18px
+}
+.evidence-head h2 {
+    margin:8px 0 6px;
+    font-size:clamp(18px,2vw,24px);
+    letter-spacing:-.035em
+}
+.evidence-intro {
+    margin:0;
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.7
+}
+.evidence-count {
+    flex:0 0 auto;
+    border:1px solid rgba(98,231,239,.22);
+    border-radius:30px;
+    padding:9px 12px;
+    color:#a8f5f3;
+    background:rgba(98,231,239,.06);
+    font:10px "DM Mono",monospace;
+    letter-spacing:.06em
+}
+.evidence-grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
+    margin-top:18px
+}
+.evidence-card {
+    overflow:hidden;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:rgba(5,15,27,.55);
+    min-width:0
+}
+.evidence-open {
+    display:block;
+    width:100%;
+    aspect-ratio:16/9;
+    padding:0;
+    overflow:hidden;
+    border:0;
+    background:#071321;
+    cursor:zoom-in
+}
+.evidence-open img {
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    transition:transform .25s ease
+}
+.evidence-open:hover img { transform:scale(1.025) }
+.evidence-caption { padding:13px 15px 14px }
+.evidence-caption strong {
+    display:block;
+    color:#e7f4ff;
+    font-size:11px;
+    margin-bottom:5px
+}
+.evidence-caption span {
+    display:block;
+    color:#91a9c2;
+    font-size:10px;
+    line-height:1.6
+}
+.evidence-modal {
+    position:fixed;
+    inset:0;
+    z-index:1000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:22px;
+    background:rgba(1,7,15,.94);
+    backdrop-filter:blur(12px)
+}
+.evidence-modal.is-open { display:flex }
+.evidence-modal-dialog {
+    width:min(1400px,96vw);
+    max-height:95vh;
+    display:flex;
+    flex-direction:column;
+    gap:12px
+}
+.evidence-modal-bar {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:14px
+}
+.evidence-modal-title {
+    display:block;
+    color:#effaff;
+    font-size:13px;
+    font-weight:800;
+    margin-top:5px
+}
+.evidence-close {
+    flex:0 0 auto;
+    border:1px solid rgba(151,192,228,.24);
+    border-radius:10px;
+    padding:9px 12px;
+    color:#dceeff;
+    background:rgba(90,133,177,.12);
+    cursor:pointer;
+    font-size:10px;
+    font-weight:800
+}
+.evidence-modal-frame {
+    min-height:0;
+    display:grid;
+    grid-template-columns:42px minmax(0,1fr) 42px;
+    align-items:center;
+    gap:10px;
+    padding:10px;
+    border:1px solid var(--line);
+    border-radius:15px;
+    background:#050e19
+}
+.evidence-modal-frame img {
+    display:block;
+    width:100%;
+    max-height:76vh;
+    object-fit:contain
+}
+.evidence-modal-nav {
+    width:40px;
+    height:40px;
+    border:1px solid rgba(151,192,228,.22);
+    border-radius:50%;
+    color:#dffcff;
+    background:rgba(90,133,177,.12);
+    cursor:pointer;
+    font-size:20px
+}
+.evidence-modal-foot {
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    color:#91a9c2;
+    font-size:10px
+}
+.evidence-modal-position {
+    flex:0 0 auto;
+    font-family:"DM Mono",monospace;
+    color:var(--cyan)
+}
+.footer {
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    color:#627d98;
+    font-size:9px;
+    letter-spacing:.08em;
+    padding:25px 3px 0;
+    text-transform:uppercase
+}
+@media(max-width:1050px) {
+    .content-grid { grid-template-columns:1fr }
+    .info-card { min-height:0 }
+    .info-bottom { margin-top:15px }
+    #scene-wrap { height:480px }
+}
+@media(max-width:720px) {
+    .topbar { height:65px; padding:0 16px }
+    .brand-name { font-size:10px }
+    .top-tag { font-size:8px; padding:7px 9px }
+    .layout { grid-template-columns:1fr }
+    .sidebar {
+        border-right:0;
+        border-bottom:1px solid var(--line);
+        padding:12px 12px 13px
+    }
+    .museum-intro,.side-label,.side-foot { display:none }
+    .nav-list {
+        flex-direction:row;
+        overflow-x:auto;
+        padding:1px 0 5px
+    }
+    .nav-item { min-width:150px; width:auto; padding:10px }
+    main { padding:25px 14px 30px }
+    .hero-head { align-items:flex-start }
+    .room-count { padding:9px 10px }
+    .room-count strong { font-size:14px }
+    #scene-wrap {
+        min-height:300px;
+        height:75vw;
+        max-height:420px
+    }
+    .info-card { padding:20px 17px }
+    .footer { flex-direction:column; gap:7px }
+    .evidence-section { padding:17px 14px }
+    .evidence-head { flex-direction:column }
+    .evidence-count { align-self:flex-start }
+    .evidence-grid { grid-template-columns:1fr }
+    .evidence-modal { padding:12px }
+    .evidence-modal-frame {
+        grid-template-columns:32px minmax(0,1fr) 32px;
+        gap:5px;
+        padding:5px
+    }
+    .evidence-modal-nav {
+        width:30px;
+        height:30px;
+        font-size:16px
+    }
+    .evidence-modal-frame img { max-height:72vh }
+    .evidence-modal-foot { flex-direction:column; gap:4px }
+}
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-mark">M</div>
+            <div>
+                <div class="brand-name">Museo de las Dimensiones</div>
+                <div class="brand-sub">Exploración de superficies en 3D</div>
+            </div>
+        </div>
+        <div class="top-tag">Experiencia matemática · 3D</div>
+    </header>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="museum-intro">
+                <strong>Un universo en tres dimensiones.</strong>
+                <span>Explora nueve superficies, descubre sus ecuaciones y observa su geometría desde cualquier ángulo.</span>
+            </div>
+            <div class="side-label">RECORRIDO DEL MUSEO</div>
+            <nav class="nav-list" id="nav-list" aria-label="Salas del museo"></nav>
+            <div class="side-foot">CÁLCULO VECTORIAL<br>Modelos construidos a partir de ecuaciones matemáticas.</div>
+        </aside>
+        <main>
+            <div class="eyebrow">Exposición interactiva · Sala de geometría espacial</div>
+            <div class="hero-head">
+                <div>
+                    <h1 id="page-title">Explora las superficies<br>en tres dimensiones.</h1>
+                    <p class="subtitle" id="page-subtitle">Selecciona una sala para comenzar. Puedes girar cada modelo con el mouse, acercarlo y observar su estructura espacial.</p>
+                </div>
+                <div class="room-count"><strong id="room-number">01 / 09</strong><span>Sala actual</span></div>
+            </div>
+            <div class="content-grid">
+                <section class="viewer-card">
+                    <div class="viewer-top">
+                        <strong>Visor tridimensional</strong>
+                        <span class="live">MODELO ACTIVO</span>
+                    </div>
+                    <div id="scene-wrap">
+                        <div class="scene-hint">Arrastra para rotar · Rueda para acercar</div>
+                    </div>
+                    <div class="scene-controls">
+                        <button class="control-btn on" id="rotate-btn">◉ Giro automático</button>
+                        <button class="control-btn on" id="grid-btn">▦ Cuadrícula</button>
+                        <button class="control-btn" id="wire-btn">◇ Malla</button>
+                        <button class="control-btn" id="reset-btn">↺ Restablecer vista</button>
+                    </div>
+                    <div class="section-panel">
+                        <div class="section-head">
+                            <span class="section-title">LABORATORIO · CORTES HORIZONTALES</span>
+                            <button class="section-toggle" id="section-toggle">＋ Mostrar corte</button>
+                        </div>
+                        <div class="section-range-row">
+                            <label for="section-slider">PLANO Z =</label>
+                            <input id="section-slider" type="range" min="-4" max="4" step="0.1" value="0" disabled />
+                            <output class="section-value" id="section-value">0.0</output>
+                        </div>
+                        <p class="section-note" id="section-note">Activa el corte para observar qué curva se forma cuando un plano horizontal atraviesa la superficie.</p>
+                    </div>
+                </section>
+                <aside class="info-card">
+                    <div class="info-kicker">Ficha de exposición</div>
+                    <h2 id="surface-name">Silla de montar</h2>
+                    <div class="latin-name" id="surface-type">Paraboloide hiperbólico</div>
+                    <div class="formula-box">
+                        <div class="formula-label">Ecuación cartesiana</div>
+                        <div class="formula" id="formula">z = x² − y²</div>
+                    </div>
+                    <p class="description" id="description"></p>
+                    <div class="fact-list" id="facts"></div>
+                    <div class="info-bottom">
+                        <span class="pill" id="category">Superficie cuádrica</span>
+                        <div class="bottom-row">
+                            <span class="progress" id="progress">01 DE 09</span>
+                            <button class="next-btn" id="next-btn">SIGUIENTE SALA →</button>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+            <section class="evidence-section" aria-labelledby="evidence-heading">
+                <div class="evidence-head">
+                    <div>
+                        <div class="info-kicker">Archivo de GeoGebra 3D</div>
+                        <h2 id="evidence-heading">Evidencias de la sala</h2>
+                        <p class="evidence-intro" id="evidence-intro">Capturas originales que documentan la construcción de la superficie y su intersección con un plano.</p>
+                    </div>
+                    <div class="evidence-count" id="evidence-count">02 EVIDENCIAS · SALA 01</div>
+                </div>
+                <div class="evidence-grid" id="evidence-grid" aria-live="polite"></div>
+            </section>
+            <div class="footer">
+                <span>Proyecto universitario · Cálculo vectorial</span>
+                <span>Museo digital de superficies en 3D</span>
+            </div>
+        </main>
+    </div>
+    <div class="evidence-modal" id="evidence-modal" aria-hidden="true">
+        <div class="evidence-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="evidence-modal-title">
+            <div class="evidence-modal-bar">
+                <div>
+                    <div class="info-kicker">Visor de evidencias</div>
+                    <strong class="evidence-modal-title" id="evidence-modal-title">Evidencia de GeoGebra</strong>
+                </div>
+                <button class="evidence-close" id="evidence-close" type="button">✕ Cerrar</button>
+            </div>
+            <div class="evidence-modal-frame">
+                <button class="evidence-modal-nav" id="evidence-prev" type="button" aria-label="Evidencia anterior">‹</button>
+                <img id="evidence-modal-image" src="" alt="" />
+                <button class="evidence-modal-nav" id="evidence-next" type="button" aria-label="Evidencia siguiente">›</button>
+            </div>
+            <div class="evidence-modal-foot">
+                <span id="evidence-modal-caption"></span>
+                <span class="evidence-modal-position" id="evidence-modal-position"></span>
+            </div>
+        </div>
+    </div>
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+
+        const surfaces = [
+            {
+                name: 'Silla de montar', type: 'Paraboloide hiperbólico',
+                formula: 'z = x² − y²', color: 0x6d8cff,
+                description: 'Es una superficie que se curva hacia arriba en una dirección y hacia abajo en la dirección perpendicular. Su forma recuerda a una silla de montar.',
+                facts: ['Presenta curvaturas opuestas en dos direcciones.', 'El corte horizontal z = 1 produce una hipérbola.', 'Su punto central es un punto de silla.'],
+                make: () => parametric((u, v) => new THREE.Vector3(u, v, (u * u - v * v)), -3, 3, -3, 3, 72, 72)
+            },
+            {
+                name: 'Paraboloide elíptico', type: 'Paraboloide',
+                formula: 'z = x²/4 + y²/9', color: 0xe58b62,
+                description: 'Es una superficie abierta que se eleva desde un vértice y se curva hacia arriba en todas las direcciones horizontales. Sus secciones horizontales son elipses.',
+                facts: ['Tiene un vértice en el origen.', 'Se abre hacia el semieje positivo de Z.', 'El corte z = 1/2 es una elipse.'],
+                make: () => parametric((u, v) => new THREE.Vector3(u, v, u * u / 4 + v * v / 9), -3, 3, -3, 3, 72, 72)
+            },
+            {
+                name: 'Esfera', type: 'Superficie esférica',
+                formula: 'x² + y² + z² = 9', color: 0x62d8df,
+                description: 'Es una superficie cerrada cuyos puntos están a la misma distancia del centro. En este modelo, el centro está en el origen y el radio mide tres unidades.',
+                facts: ['Centro: (0, 0, 0).', 'Radio: 3 unidades.', 'El corte por z = 0 es una circunferencia de radio 3.'],
+                make: () => new THREE.SphereGeometry(3, 72, 52)
+            },
+            {
+                name: 'Cono doble', type: 'Superficie cónica',
+                formula: 'x² + y² = z²', color: 0xe18bd5,
+                description: 'Está formado por dos hojas cónicas que se unen en un vértice. La superficie es simétrica respecto al eje Z.',
+                facts: ['Vértice: (0, 0, 0).', 'Tiene una hoja superior y otra inferior.', 'El corte horizontal z = 2 es una circunferencia de radio 2.'],
+                make: () => parametric((u, v) => new THREE.Vector3(Math.abs(u) * Math.cos(v), Math.abs(u) * Math.sin(v), u), -4, 4, 0, Math.PI * 2, 100, 80)
+            },
+            {
+                name: 'Elipsoide', type: 'Superficie cuádrica cerrada',
+                formula: 'x²/9 + y²/4 + z²/16 = 1', color: 0x8ea6ff,
+                description: 'Es una superficie cerrada similar a una esfera deformada. Sus dimensiones son distintas en los tres ejes coordenados.',
+                facts: ['Semieje en X: 3 unidades.', 'Semieje en Y: 2 unidades.', 'Semieje en Z: 4 unidades.'],
+                make: () => {
+                    const g = new THREE.SphereGeometry(1, 72, 52);
+                    g.scale(3, 2, 4);
+                    return g;
+                }
+            },
+            {
+                name: 'Toroide', type: 'Superficie de revolución',
+                formula: '(x² + y² + z² + 8)² = 36(x² + y²)', color: 0x61d8b1,
+                description: 'Es una superficie con forma de anillo o dona. Se obtiene al hacer girar una circunferencia alrededor de un eje coplanar que no la corta.',
+                facts: ['Radio mayor: 3 unidades.', 'Radio menor: 1 unidad.', 'El corte por z = 0 produce dos circunferencias.', 'No es una cuádrica: su ecuación implícita es de cuarto grado.'],
+                make: () => new THREE.TorusGeometry(3, 1, 36, 100)
+            },
+            {
+                name: 'Hiperboloide de dos hojas', type: 'Superficie cuádrica',
+                formula: 'z²/9 − x²/4 − y²/4 = 1', color: 0xf0b65f,
+                description: 'Está compuesto por dos partes separadas, una situada por encima y otra por debajo del plano XY. No existe superficie entre ambas hojas.',
+                facts: ['Tiene dos hojas desconectadas.', 'Su eje principal es el eje Z.', 'Los cortes horizontales válidos son elipses.'],
+                make: () => {
+                    const a = parametric((t, v) => new THREE.Vector3(2 * Math.sinh(t) * Math.cos(v), 2 * Math.sinh(t) * Math.sin(v), 3 * Math.cosh(t)), 0, 1.15, 0, Math.PI * 2, 50, 80);
+                    const b = parametric((t, v) => new THREE.Vector3(2 * Math.sinh(t) * Math.cos(v), 2 * Math.sinh(t) * Math.sin(v), -3 * Math.cosh(t)), 0, 1.15, 0, Math.PI * 2, 50, 80);
+                    return [a, b];
+                }
+            },
+            {
+                name: 'Cilindro elíptico', type: 'Superficie cilíndrica',
+                formula: 'x²/4 + y²/9 = 1', color: 0x7caeff,
+                description: 'Es una superficie que mantiene una sección elíptica constante mientras se prolonga paralelamente al eje Z.',
+                facts: ['Su sección transversal es una elipse.', 'Semieje en X: 2 unidades.', 'Semieje en Y: 3 unidades.'],
+                make: () => parametric((u, v) => new THREE.Vector3(2 * Math.cos(u), 3 * Math.sin(u), v), 0, Math.PI * 2, -4, 4, 90, 50)
+            },
+            {
+                name: 'Cilindro parabólico', type: 'Superficie cilíndrica',
+                formula: 'z = x²/4', color: 0xc09aff,
+                description: 'Se forma al desplazar una parábola en una dirección paralela a sí misma. La superficie se extiende a lo largo del eje Y.',
+                facts: ['Su sección vertical es una parábola.', 'Se prolonga paralelamente al eje Y.', 'El corte z = 1 está formado por dos rectas paralelas.'],
+                make: () => parametric((u, v) => new THREE.Vector3(u, v, u * u / 4), -4, 4, -4, 4, 72, 60)
+            }
+        ];
+
+        const evidenceSets = [
+            {
+                name: 'Silla de montar',
+                items: [
+                    {file: '1 Silla de montar (paraboloide hiperbólico).png', title: 'Evidencia 1 · Construcción', note: 'Construcción de la silla de montar en GeoGebra 3D.'},
+                    {file: '1Silla de montar intercepcion.png', title: 'Evidencia 2 · Intersección', note: 'Vista de la superficie con el plano y sus curvas de intersección.'}
+                ]
+            },
+            {
+                name: 'Paraboloide elíptico',
+                items: [
+                    {file: '2paraboloide.png', title: 'Evidencia 1 · Construcción', note: 'Construcción del paraboloide elíptico en GeoGebra 3D.'},
+                    {file: '2paraboloide-intercepcion.png', title: 'Evidencia 2 · Intersección', note: 'Vista del plano horizontal al atravesar el paraboloide.'}
+                ]
+            },
+            {
+                name: 'Esfera',
+                items: [
+                    {file: '3esfera.png', title: 'Evidencia 1 · Construcción', note: 'Construcción de la esfera en GeoGebra 3D.'},
+                    {file: '3esfera-intercepcion.png', title: 'Evidencia 2 · Intersección', note: 'Vista de la esfera con el plano de corte.'}
+                ]
+            },
+            {
+                name: 'Cono doble',
+                items: [
+                    {file: '4ConoDoble.png', title: 'Evidencia 1 · Construcción', note: 'Construcción de las dos hojas del cono en GeoGebra 3D.'},
+                    {file: '4ConoDoble-intercepcion.png', title: 'Evidencia 2 · Intersección', note: 'Vista del cono doble atravesado por un plano horizontal.'}
+                ]
+            },
+            {
+                name: 'Elipsoide',
+                items: [
+                    {file: '5elipsoide.png', title: 'Evidencia 1 · Construcción', note: 'Construcción del elipsoide en GeoGebra 3D.'},
+                    {file: '5elipsoide-intercepcion.png', title: 'Evidencia 2 · Intersección', note: 'Vista del plano horizontal y la sección del elipsoide.'}
+                ]
+            },
+            {
+                name: 'Toroide',
+                items: [
+                    {file: '6 toroide.png', title: 'Evidencia 1 · Construcción', note: 'Construcción del toroide en GeoGebra 3D.'},
+                    {file: '6 toroide-intercepcion.png', title: 'Evidencia 2 · Intersección', note: 'Vista del toroide con el plano que produce sus secciones.'}
+                ]
+            },
+            {
+                name: 'Hiperboloide de dos hojas',
+                items: [
+                    {file: '7hiperboloide de dos hojas.png', title: 'Evidencia 1 · Construcción', note: 'Construcción de las dos hojas del hiperboloide.'},
+                    {file: '7hiperboloide de dos hojas-intercepcion.png', title: 'Evidencia 2 · Intersección', note: 'Vista del plano horizontal y la sección de una hoja.'}
+                ]
+            },
+            {
+                name: 'Cilindro elíptico',
+                items: [
+                    {file: '8 Cilindro elíptico.png', title: 'Evidencia 1 · Construcción', note: 'Construcción del cilindro elíptico en GeoGebra 3D.'},
+                    {file: '8 cilindro elíptico. intercepcion.png', title: 'Evidencia 2 · Intersección', note: 'Vista del cilindro y el plano de corte horizontal.'}
+                ]
+            },
+            {
+                name: 'Cilindro parabólico',
+                items: [
+                    {file: '9CILINDRO PARABÓLICO.png', title: 'Evidencia 1 · Construcción', note: 'Construcción del cilindro parabólico en GeoGebra 3D.'},
+                    {file: 'Captura de pantalla (84).png', title: 'Evidencia 2 · Intersección', note: 'Vista del plano y la intersección con el cilindro parabólico.'}
+                ]
+            }
+        ];
+
+        const evidenceGrid = document.getElementById('evidence-grid');
+        const evidenceIntro = document.getElementById('evidence-intro');
+        const evidenceCount = document.getElementById('evidence-count');
+        const evidenceModal = document.getElementById('evidence-modal');
+        const evidenceModalImage = document.getElementById('evidence-modal-image');
+        const evidenceModalTitle = document.getElementById('evidence-modal-title');
+        const evidenceModalCaption = document.getElementById('evidence-modal-caption');
+        const evidenceModalPosition = document.getElementById('evidence-modal-position');
+
+        let activeEvidenceIndex = 0;
+
+        function evidencePath(item) {
+            return encodeURI(item.file);
+        }
+
+        function renderEvidenceGallery(index) {
+            const room = evidenceSets[index];
+            evidenceGrid.replaceChildren();
+
+            evidenceIntro.textContent =
+                `Capturas originales de GeoGebra 3D para documentar la construcción y el comportamiento de ${room.name.toLowerCase()}. Selecciona una imagen para ampliarla.`;
+
+            evidenceCount.textContent =
+                `02 EVIDENCIAS · SALA ${String(index + 1).padStart(2, '0')}`;
+
+            room.items.forEach((item, itemIndex) => {
+                const card = document.createElement('article');
+                card.className = 'evidence-card';
+
+                const openButton = document.createElement('button');
+                openButton.className = 'evidence-open';
+                openButton.type = 'button';
+                openButton.setAttribute('aria-label', `Ampliar ${item.title} de ${room.name}`);
+
+                const image = document.createElement('img');
+                image.src = evidencePath(item);
+                image.alt = `${room.name}: ${item.title}`;
+                image.loading = 'lazy';
+                image.decoding = 'async';
+
+                image.onerror = () => {
+                    console.error('No se pudo cargar la imagen:', item.file);
+                };
+
+                openButton.appendChild(image);
+                openButton.addEventListener('click', () => openEvidenceModal(itemIndex));
+
+                const caption = document.createElement('div');
+                caption.className = 'evidence-caption';
+
+                const title = document.createElement('strong');
+                title.textContent = item.title;
+
+                const note = document.createElement('span');
+                note.textContent = item.note;
+
+                caption.append(title, note);
+                card.append(openButton, caption);
+                evidenceGrid.appendChild(card);
+            });
+        }
+
+        function updateEvidenceModal() {
+            const room = evidenceSets[currentIndex];
+            const item = room.items[activeEvidenceIndex];
+
+            evidenceModalImage.src = evidencePath(item);
+            evidenceModalImage.alt = `${room.name}: ${item.title}`;
+            evidenceModalTitle.textContent = `${room.name} · ${item.title}`;
+            evidenceModalCaption.textContent = item.note;
+            evidenceModalPosition.textContent =
+                `${activeEvidenceIndex + 1} / ${room.items.length}`;
+        }
+
+        function openEvidenceModal(index) {
+            activeEvidenceIndex = index;
+            updateEvidenceModal();
+
+            evidenceModal.classList.add('is-open');
+            evidenceModal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+
+            document.getElementById('evidence-close').focus();
+        }
+
+        function closeEvidenceModal() {
+            evidenceModal.classList.remove('is-open');
+            evidenceModal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('evidence-close')
+            .addEventListener('click', closeEvidenceModal);
+
+        document.getElementById('evidence-prev').addEventListener('click', () => {
+            activeEvidenceIndex =
+                (activeEvidenceIndex + evidenceSets[currentIndex].items.length - 1)
+                % evidenceSets[currentIndex].items.length;
+
+            updateEvidenceModal();
+        });
+
+        document.getElementById('evidence-next').addEventListener('click', () => {
+            activeEvidenceIndex =
+                (activeEvidenceIndex + 1)
+                % evidenceSets[currentIndex].items.length;
+
+            updateEvidenceModal();
+        });
+
+        evidenceModal.addEventListener('click', event => {
+            if (event.target === evidenceModal) closeEvidenceModal();
+        });
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && evidenceModal.classList.contains('is-open')) {
+                closeEvidenceModal();
+            }
+
+            if (event.key === 'ArrowLeft' && evidenceModal.classList.contains('is-open')) {
+                activeEvidenceIndex =
+                    (activeEvidenceIndex + evidenceSets[currentIndex].items.length - 1)
+                    % evidenceSets[currentIndex].items.length;
+
+                updateEvidenceModal();
+            }
+
+            if (event.key === 'ArrowRight' && evidenceModal.classList.contains('is-open')) {
+                activeEvidenceIndex =
+                    (activeEvidenceIndex + 1)
+                    % evidenceSets[currentIndex].items.length;
+
+                updateEvidenceModal();
+            }
+        });
+
+        const wrap = document.getElementById('scene-wrap');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x091827);
+        scene.fog = new THREE.Fog(0x091827, 15, 32);
+
+        const camera = new THREE.PerspectiveCamera(43, 1, 0.1, 100);
+        camera.up.set(0, 0, 1);
+        camera.position.set(8, 7, 10);
+
+        const renderer = new THREE.WebGLRenderer({antialias: true, alpha: false});
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.15;
+        wrap.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.055;
+        controls.minDistance = 4;
+        controls.maxDistance = 24;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.65;
+        controls.target.set(0, 0, 0);
+
+        scene.add(new THREE.HemisphereLight(0xb9e8ff, 0x16213b, 2.0));
+
+        const key = new THREE.DirectionalLight(0xffffff, 2.5);
+        key.position.set(7, 10, 8);
+        scene.add(key);
+
+        const rim = new THREE.PointLight(0x35ddeb, 38, 28);
+        rim.position.set(-5, 3, -4);
+        scene.add(rim);
+
+        const violet = new THREE.PointLight(0x8564ff, 28, 24);
+        violet.position.set(4, -3, 5);
+        scene.add(violet);
+
+        const grid = new THREE.GridHelper(18, 18, 0x36728b, 0x244158);
+        grid.rotation.x = Math.PI / 2;
+        grid.position.z = -3.2;
+        grid.material.transparent = true;
+        grid.material.opacity = .42;
+        scene.add(grid);
+
+        const axes = new THREE.Group();
+
+        function axisLine(a, b, color) {
+            const points = [new THREE.Vector3(...a), new THREE.Vector3(...b)];
+            const geo = new THREE.BufferGeometry().setFromPoints(points);
+            const line = new THREE.Line(
+                geo,
+                new THREE.LineBasicMaterial({color, transparent: true, opacity: .75})
+            );
+            axes.add(line);
+        }
+
+        axisLine([-5, 0, 0], [5, 0, 0], 0xff647c);
+        axisLine([0, -5, 0], [0, 5, 0], 0x62e6ad);
+        axisLine([0, 0, -5], [0, 0, 5], 0x66aaff);
+        scene.add(axes);
+
+        const starCount = 450;
+        const starPositions = new Float32Array(starCount * 3);
+
+        for (let i = 0; i < starCount; i++) {
+            starPositions[i * 3] = (Math.random() - .5) * 34;
+            starPositions[i * 3 + 1] = (Math.random() - .5) * 25;
+            starPositions[i * 3 + 2] = (Math.random() - .5) * 34;
+        }
+
+        const starGeo = new THREE.BufferGeometry();
+        starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+
+        const stars = new THREE.Points(
+            starGeo,
+            new THREE.PointsMaterial({color: 0x8bbfe7, size: .035, transparent: true, opacity: .65})
+        );
+        scene.add(stars);
+
+        let currentGroup = null;
+        let currentIndex = 0;
+        let wireframe = false;
+
+        function parametric(fn, u0, u1, v0, v1, nu, nv) {
+            const positions = [];
+            const indices = [];
+
+            for (let i = 0; i <= nu; i++) {
+                const u = u0 + (u1 - u0) * i / nu;
+
+                for (let j = 0; j <= nv; j++) {
+                    const v = v0 + (v1 - v0) * j / nv;
+                    const p = fn(u, v);
+                    positions.push(p.x, p.y, p.z);
+                }
+            }
+
+            for (let i = 0; i < nu; i++) {
+                for (let j = 0; j < nv; j++) {
+                    const a = i * (nv + 1) + j;
+                    const b = a + nv + 1;
+                    indices.push(a, b, a + 1, b, b + 1, a + 1);
+                }
+            }
+
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setIndex(indices);
+            geometry.computeVertexNormals();
+
+            return geometry;
+        }
+
+        // Herramienta didáctica: intersección de cada superficie con el plano horizontal z = h.
+        const sectionToggle = document.getElementById('section-toggle');
+        const sectionSlider = document.getElementById('section-slider');
+        const sectionValue = document.getElementById('section-value');
+        const sectionNote = document.getElementById('section-note');
+
+        let sectionVisible = false;
+        const sectionGroup = new THREE.Group();
+        scene.add(sectionGroup);
+
+        function curvePoints(fn, start = 0, end = Math.PI * 2, count = 180) {
+            const pts = [];
+
+            for (let i = 0; i <= count; i++) {
+                pts.push(fn(start + (end - start) * i / count));
+            }
+
+            return pts;
+        }
+
+        function circlePoints(radius, h) {
+            return curvePoints(t =>
+                new THREE.Vector3(radius * Math.cos(t), radius * Math.sin(t), h)
+            );
+        }
+
+        function ellipsePoints(a, b, h) {
+            return curvePoints(t =>
+                new THREE.Vector3(a * Math.cos(t), b * Math.sin(t), h)
+            );
+        }
+
+        function linePoints(fn) {
+            const pts = [];
+
+            for (let i = 0; i <= 100; i++) {
+                const t = -4 + 8 * i / 100;
+                pts.push(fn(t));
+            }
+
+            return pts;
+        }
+
+        function sectionData(index, h) {
+            const no = 'No hay intersección real con la superficie en este nivel.';
+            const point = (x, y) => [new THREE.Vector3(x, y, h)];
+
+            switch (index) {
+                case 0: {
+                    if (Math.abs(h) < 0.045) {
+                        return {
+                            note: 'En z = 0 aparecen dos rectas que se cruzan: x = y y x = −y.',
+                            curves: [
+                                linePoints(t => new THREE.Vector3(t, t, h)),
+                                linePoints(t => new THREE.Vector3(t, -t, h))
+                            ]
+                        };
+                    }
+
+                    const r = Math.sqrt(Math.abs(h));
+                    const curves = [];
+
+                    for (const sign of [-1, 1]) {
+                        curves.push(curvePoints(t => h > 0
+                            ? new THREE.Vector3(sign * r * Math.cosh(t), r * Math.sinh(t), h)
+                            : new THREE.Vector3(r * Math.sinh(t), sign * r * Math.cosh(t), h),
+                            -1.65, 1.65, 120
+                        ));
+                    }
+
+                    return {
+                        note: h > 0
+                            ? 'El corte es una hipérbola que abre en la dirección del eje X.'
+                            : 'El corte es una hipérbola que abre en la dirección del eje Y.',
+                        curves
+                    };
+                }
+
+                case 1: {
+                    if (h < 0) {
+                        return {
+                            note: 'Como el paraboloide está por encima de z = 0, un plano con z negativo no lo corta.',
+                            curves: []
+                        };
+                    }
+
+                    if (h < 0.015) {
+                        return {
+                            note: 'En z = 0 el plano toca la superficie únicamente en su vértice (0, 0, 0).',
+                            curves: [point(0, 0)]
+                        };
+                    }
+
+                    return {
+                        note: 'El corte es una elipse: sus semiejes crecen al aumentar la altura z.',
+                        curves: [ellipsePoints(2 * Math.sqrt(h), 3 * Math.sqrt(h), h)]
+                    };
+                }
+
+                case 2: {
+                    if (Math.abs(h) > 3) return {note: no, curves: []};
+
+                    const r = Math.sqrt(Math.max(0, 9 - h * h));
+
+                    return {
+                        note: r < 0.02
+                            ? 'El plano es tangente a la esfera y la toca en un solo punto.'
+                            : 'El corte es una circunferencia. Su radio máximo se obtiene en z = 0.',
+                        curves: r < 0.02 ? [point(0, 0)] : [circlePoints(r, h)]
+                    };
+                }
+
+                case 3: {
+                    const r = Math.abs(h);
+
+                    return {
+                        note: r < 0.02
+                            ? 'El plano pasa por el vértice del cono.'
+                            : 'El corte es una circunferencia; su radio es igual al valor absoluto de z.',
+                        curves: r < 0.02 ? [point(0, 0)] : [circlePoints(r, h)]
+                    };
+                }
+
+                case 4: {
+                    if (Math.abs(h) > 4) return {note: no, curves: []};
+
+                    const f = Math.sqrt(Math.max(0, 1 - h * h / 16));
+
+                    return {
+                        note: f < 0.02
+                            ? 'El plano es tangente al elipsoide en uno de sus extremos.'
+                            : 'El corte es una elipse que se hace más pequeña al acercarse a z = ±4.',
+                        curves: f < 0.02
+                            ? [point(0, 0)]
+                            : [ellipsePoints(3 * f, 2 * f, h)]
+                    };
+                }
+
+                case 5: {
+                    if (Math.abs(h) > 1) {
+                        return {
+                            note: 'El plano está por encima o por debajo del tubo del toroide; no hay intersección.',
+                            curves: []
+                        };
+                    }
+
+                    const r = Math.sqrt(Math.max(0, 1 - h * h));
+                    const curves = [circlePoints(3 + r, h)];
+
+                    if (r > 0.015) curves.push(circlePoints(3 - r, h));
+
+                    return {
+                        note: r < 0.015
+                            ? 'El plano es tangente a la parte superior o inferior del toroide y forma una circunferencia.'
+                            : 'El corte produce dos circunferencias concéntricas.',
+                        curves
+                    };
+                }
+
+                case 6: {
+                    if (Math.abs(h) < 3) {
+                        return {
+                            note: 'Entre z = −3 y z = 3 no existe superficie: las dos hojas están separadas.',
+                            curves: []
+                        };
+                    }
+
+                    const r = 2 * Math.sqrt(Math.max(0, h * h / 9 - 1));
+
+                    return {
+                        note: r < 0.02
+                            ? 'El plano toca una hoja en su vértice.'
+                            : 'El corte es una circunferencia que aumenta de radio al alejarse del vértice.',
+                        curves: r < 0.02 ? [point(0, 0)] : [circlePoints(r, h)]
+                    };
+                }
+
+                case 7:
+                    return {
+                        note: 'El corte siempre es la misma elipse: el cilindro conserva su sección transversal a cualquier altura.',
+                        curves: [ellipsePoints(2, 3, h)]
+                    };
+
+                case 8: {
+                    if (h < 0) {
+                        return {
+                            note: 'No hay intersección: la superficie está en z ≥ 0.',
+                            curves: []
+                        };
+                    }
+
+                    if (h < 0.015) {
+                        return {
+                            note: 'En z = 0 el plano es tangente a la superficie y la intersección es la recta x = 0.',
+                            curves: [linePoints(t => new THREE.Vector3(0, t, h))]
+                        };
+                    }
+
+                    const x = 2 * Math.sqrt(h);
+
+                    return {
+                        note: 'El corte está formado por dos rectas paralelas al eje Y: x = ±2√z.',
+                        curves: [
+                            linePoints(t => new THREE.Vector3(x, t, h)),
+                            linePoints(t => new THREE.Vector3(-x, t, h))
+                        ]
+                    };
+                }
+            }
+
+            return {note: no, curves: []};
+        }
+
+        function clearSectionGroup() {
+            sectionGroup.traverse(obj => {
+                if (obj.geometry) obj.geometry.dispose();
+
+                if (obj.material) {
+                    if (Array.isArray(obj.material)) {
+                        obj.material.forEach(m => m.dispose());
+                    } else {
+                        obj.material.dispose();
+                    }
+                }
+            });
+
+            sectionGroup.clear();
+        }
+
+        function updateSection() {
+            clearSectionGroup();
+
+            if (!sectionVisible) return;
+
+            const h = Number(sectionSlider.value);
+
+            const plane = new THREE.Mesh(
+                new THREE.PlaneGeometry(11, 11),
+                new THREE.MeshBasicMaterial({
+                    color: 0x52e7ef,
+                    transparent: true,
+                    opacity: .12,
+                    side: THREE.DoubleSide,
+                    depthWrite: false
+                })
+            );
+
+            plane.position.z = h;
+            plane.renderOrder = 2;
+            sectionGroup.add(plane);
+
+            const result = sectionData(currentIndex, h);
+
+            result.curves.forEach(points => {
+                if (points.length === 1) {
+                    const dot = new THREE.Mesh(
+                        new THREE.SphereGeometry(.075, 16, 12),
+                        new THREE.MeshBasicMaterial({color: 0xffdf78})
+                    );
+
+                    dot.position.copy(points[0]);
+                    dot.renderOrder = 4;
+                    sectionGroup.add(dot);
+                } else {
+                    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+                    const line = new THREE.Line(
+                        geometry,
+                        new THREE.LineBasicMaterial({
+                            color: 0x75fff0,
+                            linewidth: 2,
+                            depthTest: false
+                        })
+                    );
+
+                    line.renderOrder = 4;
+                    sectionGroup.add(line);
+                }
+            });
+
+            sectionNote.textContent = result.note;
+        }
+
+        sectionToggle.addEventListener('click', () => {
+            sectionVisible = !sectionVisible;
+
+            sectionToggle.classList.toggle('on', sectionVisible);
+            sectionToggle.textContent = sectionVisible ? '− Ocultar corte' : '＋ Mostrar corte';
+            sectionSlider.disabled = !sectionVisible;
+
+            if (sectionVisible) {
+                updateSection();
+            } else {
+                clearSectionGroup();
+                sectionNote.textContent = 'Activa el corte para observar qué curva se forma cuando un plano horizontal atraviesa la superficie.';
+            }
+        });
+
+        sectionSlider.addEventListener('input', () => {
+            sectionValue.textContent = Number(sectionSlider.value).toFixed(1);
+            updateSection();
+        });
+
+        function makeMaterial(color) {
+            return new THREE.MeshStandardMaterial({
+                color,
+                metalness: .24,
+                roughness: .28,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: .91,
+                wireframe
+            });
+        }
+
+        function addGeometry(group, geometry, color) {
+            const mesh = new THREE.Mesh(geometry, makeMaterial(color));
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            group.add(mesh);
+        }
+
+        function loadSurface(index) {
+            currentIndex = (index + surfaces.length) % surfaces.length;
+            const data = surfaces[currentIndex];
+
+            renderEvidenceGallery(currentIndex);
+
+            if (currentGroup) {
+                currentGroup.traverse(obj => {
+                    if (obj.geometry) obj.geometry.dispose();
+                    if (obj.material) obj.material.dispose();
+                });
+                scene.remove(currentGroup);
+            }
+
+            currentGroup = new THREE.Group();
+
+            const made = data.make();
+
+            (Array.isArray(made) ? made : [made]).forEach(g => {
+                addGeometry(currentGroup, g, data.color);
+            });
+
+            scene.add(currentGroup);
+
+            document.getElementById('surface-name').textContent = data.name;
+            document.getElementById('surface-type').textContent = data.type;
+            document.getElementById('formula').textContent = data.formula;
+            document.getElementById('description').textContent = data.description;
+
+            document.getElementById('facts').innerHTML =
+                data.facts.map(f => `<div class="fact">${f}</div>`).join('');
+
+            document.getElementById('room-number').textContent =
+                String(currentIndex + 1).padStart(2, '0') + ' / 09';
+
+            document.getElementById('progress').textContent =
+                String(currentIndex + 1).padStart(2, '0') + ' DE 09';
+
+            document.getElementById('page-title').innerHTML =
+                `${data.name}<br><span style="color:#8ea9c8;font-size:.62em;font-weight:600">${data.type}</span>`;
+
+            document.getElementById('page-subtitle').textContent =
+                'Explora el modelo desde cualquier ángulo. Arrastra para rotar, utiliza la rueda para acercar y activa la malla para observar su estructura.';
+
+            document.getElementById('category').textContent =
+                currentIndex === 5
+                    ? 'Superficie algebraica de cuarto grado'
+                    : (currentIndex === 2 || currentIndex === 4
+                        ? 'Superficie cuádrica cerrada'
+                        : 'Superficie cuádrica');
+
+            [...document.querySelectorAll('.nav-item')].forEach((b, i) => {
+                b.classList.toggle('active', i === currentIndex);
+            });
+
+            controls.target.set(0, 0, 0);
+
+            sectionSlider.value = '0';
+            sectionValue.textContent = '0.0';
+
+            if (sectionVisible) updateSection();
+
+            if (currentIndex === 0) {
+                camera.position.set(14, 14, 17);
+            } else {
+                camera.position.set(8, 7, 10);
+            }
+
+            controls.update();
+        }
+
+        const nav = document.getElementById('nav-list');
+
+        surfaces.forEach((s, i) => {
+            const b = document.createElement('button');
+
+            b.className = 'nav-item' + (i === 0 ? ' active' : '');
+            b.innerHTML =
+                `<span class="nav-num">${String(i + 1).padStart(2, '0')}</span><span class="nav-name">${s.name}</span>`;
+
+            b.addEventListener('click', () => loadSurface(i));
+            nav.appendChild(b);
+        });
+
+        document.getElementById('next-btn')
+            .addEventListener('click', () => loadSurface(currentIndex + 1));
+
+        document.getElementById('rotate-btn').addEventListener('click', e => {
+            controls.autoRotate = !controls.autoRotate;
+            e.currentTarget.classList.toggle('on', controls.autoRotate);
+        });
+
+        document.getElementById('grid-btn').addEventListener('click', e => {
+            grid.visible = !grid.visible;
+            axes.visible = grid.visible;
+            e.currentTarget.classList.toggle('on', grid.visible);
+        });
+
+        document.getElementById('wire-btn').addEventListener('click', e => {
+            wireframe = !wireframe;
+
+            if (currentGroup) {
+                currentGroup.traverse(o => {
+                    if (o.isMesh) o.material.wireframe = wireframe;
+                });
+            }
+
+            e.currentTarget.classList.toggle('on', wireframe);
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            camera.position.set(8, 7, 10);
+            controls.target.set(0, 0, 0);
+            controls.update();
+        });
+
+        function resize() {
+            const w = wrap.clientWidth;
+            const h = wrap.clientHeight;
+
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+        }
+
+        const observer = new ResizeObserver(resize);
+        observer.observe(wrap);
+        resize();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            stars.rotation.y += .00018;
+            renderer.render(scene, camera);
+        }
+
+        loadSurface(0);
+        animate();
+    </script>
+</body>
+</html>
